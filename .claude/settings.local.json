@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd \"c:\\\\Users\\\\akpam\\\\Downloads\\\\anything\\\\anything\" && find . -path ./node_modules -prune -o -iname \"SKILL.md\" -print 2>/dev/null)",
+      "Read(//c/Users/akpam/Downloads/anything/anything/**)",
+      "Bash(bun --version)",
+      "Bash(echo \"exit:$?\")",
+      "Bash(npm install *)"
+    ]
+  }
+}

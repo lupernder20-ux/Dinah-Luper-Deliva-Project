@@ -1,0 +1,11 @@
+.DS_Store
+/node_modules/
+
+# React Router
+/.react-router/
+/build/
+
+# Secrets — never commit real values, see .env.example
+.env
+.env.*
+!.env.example
