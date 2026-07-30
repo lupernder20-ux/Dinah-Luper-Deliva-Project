@@ -13,6 +13,8 @@ import { nextPublicProcessEnv } from './plugins/nextPublicProcessEnv';
 import { restart } from './plugins/restart';
 import { restartEnvFileChange } from './plugins/restartEnvFileChange';
 
+const isVercelBuild = process.env.BUILD_TARGET === 'vercel';
+
 export default defineConfig({
   // Keep them available via import.meta.env.NEXT_PUBLIC_*
   envPrefix: 'NEXT_PUBLIC_',
@@ -48,7 +50,7 @@ export default defineConfig({
     nextPublicProcessEnv(),
     restartEnvFileChange(),
     reactRouterHonoServer({
-      serverEntryPoint: './__create/index.ts',
+      serverEntryPoint: isVercelBuild ? './__create/index.vercel.ts' : './__create/index.ts',
       runtime: 'node',
     }),
     babel({

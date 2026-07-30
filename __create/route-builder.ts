@@ -1,6 +1,6 @@
 import { readdir, stat } from 'node:fs/promises';
 import { join } from 'node:path';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+import { pathToFileURL } from 'node:url';
 import { Hono } from 'hono';
 import type { Handler } from 'hono/types';
 import updatedFetch from '../src/__create/fetch';
@@ -8,8 +8,14 @@ import updatedFetch from '../src/__create/fetch';
 const API_BASENAME = '/api';
 const api = new Hono();
 
-// Get current directory
-const __dirname = join(fileURLToPath(new URL('.', import.meta.url)), '../src/app/api');
+// This must NOT be derived from import.meta.url: once bundled for
+// production, this module's own on-disk location shifts depending on how
+// the bundler chunks things (varies by build target), so a path computed
+// relative to it silently resolves to the wrong directory. process.cwd()
+// is stable across dev, and every deploy target (Render's `node
+// ./build/server/index.js`, a Vercel function) runs with the project root
+// (apps/web) as the working directory.
+const __dirname = join(process.cwd(), 'src/app/api');
 if (globalThis.fetch) {
   globalThis.fetch = updatedFetch;
 }
