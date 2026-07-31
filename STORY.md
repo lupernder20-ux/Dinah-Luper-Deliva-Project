@@ -49,7 +49,21 @@ For the "live" parts, I deliberately didn't reach for anything fancy like WebSoc
 
 While wiring up all of this, I found something that had actually been broken from the very start of building on this particular computer, without anyone noticing: **every single request to the server's API was silently failing**, on this Windows machine specifically. The part of the code that automatically finds and connects each API file to the server was written assuming file paths look the way they do on Mac/Linux (with forward slashes), and Windows paths use backslashes instead — so on Windows, that matching silently broke, and every request quietly fell back to a generic "page not found" instead of ever reaching the real code, with no obvious error to explain why. I tracked it down and fixed the two spots responsible, and after that, everything that had looked like it "sort of worked" before actually started working properly, end to end.
 
-## 8. Getting it ready to hand over
+## 8. Where the look of the app comes from
+
+Nothing visual in this project was drawn by hand, and it's worth being plain about where each piece comes from:
+
+- **The icons** — the little truck, package, shield, user, bell, and so on — all come from **Lucide** (the `lucide-react` package), a free, open-source icon library. Each icon is imported by name (`<Truck />`, `<Package />`, `<ShieldCheck />`) and dropped into the page like any other component. The larger colorful symbols (🚚 📦 💰 ⭐ 👑) are not images at all — they're ordinary emoji characters, the same ones a phone keyboard types, rendered by the operating system.
+- **The styling** — every color, gradient, rounded corner, and shadow — is **Tailwind CSS**: instead of writing separate stylesheet files, each element carries small utility classes (`rounded-3xl`, `shadow-xl`, `font-black`) directly in the markup. The signature blue-to-purple gradients are inline CSS gradients built on a small fixed palette (`#0A84FF` blue, `#7C3AED` purple, `#00C853` green, `#FF6D00` orange).
+- **The font** is **Poppins**, loaded from Google Fonts — a build step scans the code for font classes and injects the right Google Fonts link automatically.
+- **The charts** on the admin dashboard (the revenue line and the delivery-volume bars) are drawn by **Recharts**, a React charting library — the app feeds it the real monthly numbers from the database and it handles the axes, tooltips, and curves.
+- **The small animations** — cards lifting on hover, the success screen popping in — come from **Motion** (the successor to Framer Motion).
+- **The address search** on the booking form is powered by **LocationIQ**'s API, as covered earlier.
+- **The overall skeleton** of the app — the file-based routing, the auth wiring, the error pages — began life as a scaffold from the **Anything.com (create.xyz) app builder platform**, which this project was originally generated on before being extracted, repaired, and made to run standalone. The `__create` folders still visible in the codebase are that scaffold's plumbing.
+
+So when the app is described as "built," what that honestly means is: the pages, flows, database design, and logic were designed and written for this project specifically, on top of freely available building blocks — icons from Lucide, styling from Tailwind, charts from Recharts, motion from Motion, fonts from Google Fonts — the same way essentially all modern web apps are put together.
+
+## 9. Getting it ready to hand over
 
 The last stretch was about making sure someone else could pick this project up from scratch: a proper install guide, a documented database setup process, build/start scripts so it can run in production (not just in dev mode), and a plan for putting it on GitHub and hosting it on Render — written so that connecting a GitHub account and deploying it live is a short, clear checklist rather than something you have to figure out.
 

@@ -16,8 +16,15 @@ export default function DashboardPage() {
       return;
     }
 
-    // Redirect based on role
-    window.location.href = `/dashboard/${user.role}`;
+    // Redirect based on role. super_admin uses the admin dashboard (with the
+    // extra Manage Admins panel) — there is no separate /dashboard/super_admin.
+    const roleDashboards = {
+      customer: "customer",
+      rider: "rider",
+      admin: "admin",
+      super_admin: "admin",
+    };
+    window.location.href = `/dashboard/${roleDashboards[user.role] ?? "customer"}`;
   }, [user, loading]);
 
   return (

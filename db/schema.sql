@@ -84,8 +84,16 @@ CREATE TABLE IF NOT EXISTS deliveries (
   tracking_id      TEXT NOT NULL UNIQUE,
   status           TEXT NOT NULL DEFAULT 'Pending'
                      CHECK (status IN ('Pending', 'Accepted', 'Picked Up', 'In Transit', 'Delivered', 'Cancelled')),
+  -- Payment step of the booking flow. Values written by the app:
+  --   payment_method: 'Card' | 'Bank Transfer' | 'Cash on Delivery'
+  --   payment_status: 'Paid' | 'Pay on Delivery' | 'Unpaid'
+  payment_method   TEXT,
+  payment_status   TEXT NOT NULL DEFAULT 'Unpaid',
   created_at       TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+-- Idempotent upgrade for databases created before the payment columns existed.
+ALTER TABLE deliveries ADD COLUMN IF NOT EXISTS payment_method TEXT;
+ALTER TABLE deliveries ADD COLUMN IF NOT EXISTS payment_status TEXT NOT NULL DEFAULT 'Unpaid';
 CREATE INDEX IF NOT EXISTS idx_deliveries_customer_id ON deliveries (customer_id);
 CREATE INDEX IF NOT EXISTS idx_deliveries_rider_id    ON deliveries (rider_id);
 CREATE INDEX IF NOT EXISTS idx_deliveries_status      ON deliveries (status);

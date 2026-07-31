@@ -18,6 +18,7 @@ import { useUserProfile } from "@/utils/useUserProfile";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "motion/react";
 import MyMessagesCard from "@/components/MyMessagesCard";
+import PaymentModal from "@/components/PaymentModal";
 
 const statusColors = {
   Pending: { bg: "#FFFBEB", text: "#D97706", dot: "#FBBF24" },
@@ -47,8 +48,9 @@ function StatusBadge({ status }) {
 export default function CustomerDashboard() {
   const { data: user } = useUserProfile();
   const [activeTab, setActiveTab] = useState("active");
+  const [payingDelivery, setPayingDelivery] = useState(null);
 
-  const { data: deliveriesData, isLoading } = useQuery({
+  const { data: deliveriesData, isLoading, refetch } = useQuery({
     queryKey: ["deliveries", user?.id],
     queryFn: async () => {
       const res = await fetch("/api/deliveries");
@@ -318,6 +320,39 @@ export default function CustomerDashboard() {
                         <MapPin size={12} /> Track
                       </a>
                     </div>
+
+                    {/* Payment — collected once the package is out for delivery */}
+                    {delivery.payment_status === "Paid" ? (
+                      <div className="mt-3 text-center text-xs font-black text-green-600 bg-green-50 border border-green-100 rounded-xl py-2.5">
+                        ✅ Paid
+                        {delivery.payment_method
+                          ? ` via ${delivery.payment_method}`
+                          : ""}
+                      </div>
+                    ) : delivery.payment_status === "Pay on Delivery" ? (
+                      <div className="mt-3 text-center text-xs font-black text-amber-600 bg-amber-50 border border-amber-100 rounded-xl py-2.5">
+                        💵 Pay rider ₦
+                        {Number(delivery.cost).toLocaleString()} on delivery
+                      </div>
+                    ) : delivery.status === "In Transit" ||
+                      delivery.status === "Delivered" ? (
+                      <button
+                        onClick={() => setPayingDelivery(delivery)}
+                        style={{
+                          background:
+                            "linear-gradient(135deg, #7C3AED, #DB2777)",
+                        }}
+                        className="mt-3 w-full text-white text-sm font-black py-3 rounded-xl hover:opacity-90 transition-all"
+                      >
+                        💳 Your package is almost there — Pay ₦
+                        {Number(delivery.cost).toLocaleString()} now
+                      </button>
+                    ) : (
+                      <div className="mt-3 text-center text-[11px] font-bold text-gray-400 bg-gray-50 border border-gray-100 rounded-xl py-2.5">
+                        💳 Payment unlocks once your package is out for
+                        delivery
+                      </div>
+                    )}
                   </motion.div>
                 ))}
               </div>
@@ -432,6 +467,14 @@ export default function CustomerDashboard() {
           </div>
         </div>
       </div>
+
+      {payingDelivery && (
+        <PaymentModal
+          delivery={payingDelivery}
+          onClose={() => setPayingDelivery(null)}
+          onPaid={() => refetch()}
+        />
+      )}
 
       <style jsx global>{`
         @keyframes spin { to { transform: rotate(360deg); } }

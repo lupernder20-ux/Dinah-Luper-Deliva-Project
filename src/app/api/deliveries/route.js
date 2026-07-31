@@ -66,17 +66,22 @@ export async function POST(request) {
     const tracking_id =
       "DL-" + Math.random().toString(36).substr(2, 6).toUpperCase();
 
+    // Bookings start Unpaid — payment happens later, from the customer's
+    // dashboard, once the delivery is out for delivery (In Transit).
+    // See src/app/api/deliveries/pay/route.js.
     const result = await sql`
       INSERT INTO deliveries (
         customer_id, sender_name, sender_phone, receiver_name, receiver_phone,
         pickup_address, pickup_lat, pickup_lng,
         delivery_address, delivery_lat, delivery_lng,
-        package_type, weight, priority, cost, notes, tracking_id, status
+        package_type, weight, priority, cost, notes, tracking_id, status,
+        payment_status
       ) VALUES (
         ${userId}, ${sender_name}, ${sender_phone}, ${receiver_name}, ${receiver_phone},
         ${pickup_address}, ${pickup_lat ?? null}, ${pickup_lng ?? null},
         ${delivery_address}, ${delivery_lat ?? null}, ${delivery_lng ?? null},
-        ${package_type}, ${weight}, ${priority}, ${cost}, ${notes}, ${tracking_id}, 'Pending'
+        ${package_type}, ${weight}, ${priority}, ${cost}, ${notes}, ${tracking_id}, 'Pending',
+        'Unpaid'
       ) RETURNING *
     `;
 

@@ -32,15 +32,31 @@ export async function GET() {
           ORDER BY d.created_at DESC LIMIT 10`,
     ]);
 
-    // Monthly revenue trend (mocking for 6 months)
-    const revenueTrend = [
-      { month: "Jan", revenue: 45000 },
-      { month: "Feb", revenue: 52000 },
-      { month: "Mar", revenue: 48000 },
-      { month: "Apr", revenue: 61000 },
-      { month: "May", revenue: 55000 },
-      { month: "Jun", revenue: 72000 },
-    ];
+    // Real monthly trend for the last 6 months, straight from the
+    // deliveries table. generate_series keeps months with no activity in
+    // the series (as zeros) so the charts always show a full 6-month axis.
+    // Revenue counts Delivered orders only; volume counts every booking
+    // made that month, so new rides move the charts as they come in.
+    const trendRows = await sql`
+      SELECT
+        to_char(m.month, 'Mon') AS month,
+        COALESCE(SUM(d.cost) FILTER (WHERE d.status = 'Delivered'), 0) AS revenue,
+        COUNT(d.id) AS volume
+      FROM generate_series(
+        date_trunc('month', now()) - interval '5 months',
+        date_trunc('month', now()),
+        interval '1 month'
+      ) AS m(month)
+      LEFT JOIN deliveries d
+        ON date_trunc('month', d.created_at) = m.month
+      GROUP BY m.month
+      ORDER BY m.month
+    `;
+    const revenueTrend = trendRows.map((r) => ({
+      month: r.month,
+      revenue: Number(r.revenue),
+      volume: Number(r.volume),
+    }));
 
     return Response.json({
       customersCount: stats[0][0].total,

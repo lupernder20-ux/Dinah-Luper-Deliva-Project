@@ -31,6 +31,7 @@ import { motion } from "motion/react";
 import { statusColors } from "@/utils/deliveryStatus";
 import ActiveRidesPanel from "@/components/ActiveRidesPanel";
 import FeedbackInbox from "@/components/FeedbackInbox";
+import ManageAdminsPanel from "@/components/ManageAdminsPanel";
 
 export default function AdminDashboard() {
   const { data: user } = useUserProfile();
@@ -305,7 +306,7 @@ export default function AdminDashboard() {
                 </h3>
               </div>
               <span className="text-xs bg-green-50 text-green-600 font-bold px-3 py-1.5 rounded-full">
-                Monthly
+                Last 6 Months
               </span>
             </div>
             <div className="h-64 w-full">
@@ -347,9 +348,10 @@ export default function AdminDashboard() {
                       boxShadow: "0 20px 40px -10px rgba(0,0,0,0.15)",
                       fontFamily: "Poppins",
                     }}
+                    formatter={(v) => [v, "Deliveries"]}
                   />
                   <Bar
-                    dataKey="revenue"
+                    dataKey="volume"
                     fill="url(#greenGradient)"
                     radius={[8, 8, 0, 0]}
                   />
@@ -495,6 +497,13 @@ export default function AdminDashboard() {
         <div className="mt-8">
           <FeedbackInbox />
         </div>
+
+        {/* ─── MANAGE ADMINS (super admin only) ─────────────────────────── */}
+        {user?.role === "super_admin" && (
+          <div className="mt-8">
+            <ManageAdminsPanel currentUserEmail={user?.email} />
+          </div>
+        )}
       </div>
     </div>
   );

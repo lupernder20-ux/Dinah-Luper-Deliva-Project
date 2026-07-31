@@ -142,6 +142,10 @@ export default function BookingPage() {
               </div>
             </div>
           )}
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-black uppercase tracking-wide mb-8 bg-blue-50 text-blue-600">
+            💳 Payment is collected when your package is out for delivery —
+            watch your dashboard
+          </div>
           <div className="space-y-3">
             <a
               href="/dashboard"
@@ -254,7 +258,10 @@ export default function BookingPage() {
           {/* ─── FORM CARD ────────────────────────────────────── */}
           <form
             onSubmit={handleSubmit}
-            className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100"
+            // overflow-hidden would clip the address-autocomplete dropdown at
+            // the card's edge — keep overflow visible and round each step
+            // header's top corners instead.
+            className="bg-white rounded-3xl shadow-2xl border border-gray-100"
           >
             {/* Step 1 */}
             {step === 1 && (
@@ -264,7 +271,7 @@ export default function BookingPage() {
                     background:
                       "linear-gradient(135deg, #0A84FF 0%, #4F46E5 100%)",
                   }}
-                  className="p-6 flex items-center gap-3"
+                  className="p-6 flex items-center gap-3 rounded-t-3xl"
                 >
                   <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center text-white">
                     <User size={20} />
@@ -376,7 +383,7 @@ export default function BookingPage() {
                     background:
                       "linear-gradient(135deg, #FF6D00 0%, #DC2626 100%)",
                   }}
-                  className="p-6 flex items-center gap-3"
+                  className="p-6 flex items-center gap-3 rounded-t-3xl"
                 >
                   <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center text-white">
                     <MapPin size={20} />
@@ -497,7 +504,7 @@ export default function BookingPage() {
                     background:
                       "linear-gradient(135deg, #00C853 0%, #0891B2 100%)",
                   }}
-                  className="p-6 flex items-center gap-3"
+                  className="p-6 flex items-center gap-3 rounded-t-3xl"
                 >
                   <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center text-white">
                     <Package size={20} />
@@ -705,16 +712,23 @@ export default function BookingPage() {
                             className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
                             style={{ animation: "spin 1s linear infinite" }}
                           />{" "}
-                          Processing...
+                          Booking...
                         </>
                       ) : (
                         <>✅ Confirm Booking</>
                       )}
                     </button>
                   </div>
+                  <p className="text-xs text-gray-400 text-center font-medium">
+                    💳 No payment needed now — you pay once your package is out
+                    for delivery.
+                  </p>
                 </div>
               </div>
             )}
+
+            {/* Step 4 — Payment (removed: payment now happens from the
+                customer dashboard once the delivery is out for delivery) */}
           </form>
         </div>
       </div>

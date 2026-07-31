@@ -7,7 +7,8 @@ For the story of how this was actually built, in plain language, see **[STORY.md
 ## The three roles
 
 **Customer**
-- Books a delivery in three steps (sender → receiver → package), with the pickup/delivery address fields showing live suggestions as they type (address autocomplete, powered by LocationIQ).
+- Books a delivery in three steps (sender → receiver → package), with the pickup/delivery address fields showing live suggestions as they type (address autocomplete, powered by LocationIQ). No payment is taken at booking.
+- Pays later, from their dashboard, once the package is **out for delivery** (In Transit): a Pay button appears on the delivery card offering card, bank transfer, or cash on delivery. The checkout is a demonstration — card/transfer mark the booking Paid, cash records Pay on Delivery for the rider to collect — nothing real is charged.
 - Tracks every delivery's status (`Pending → Accepted → Picked Up → In Transit → Delivered`) from their dashboard, and by a public tracking link/ID.
 - Can send a general message, leave feedback on a specific delivery (with a star rating), or report a problem — and sees the admin's reply once one is posted, right on their dashboard.
 
@@ -24,8 +25,8 @@ For the story of how this was actually built, in plain language, see **[STORY.md
 
 There are two admin tiers:
 
-- **`admin`** — full access to the admin dashboard: live stats, the Active Rides panel, and the Feedback & Reports inbox.
-- **`super_admin`** — everything `admin` can do, plus access to **Manage Admins** (`/admin-setup`), a tool for changing any account's role by email.
+- **`admin`** — full access to the admin dashboard: live stats, real monthly revenue/volume charts, the Active Rides panel, and the Feedback & Reports inbox.
+- **`super_admin`** — everything `admin` can do, plus a **Manage Admins** panel at the bottom of the same dashboard (`/dashboard/admin`) for appointing and removing admins by email. (The standalone `/admin-setup` page still exists and can additionally set any role, including transferring `super_admin`.) Super admins land on the admin dashboard — there is no separate super-admin page.
 
 Currently seeded:
 
@@ -70,7 +71,7 @@ Pages and API routes both live under `src/app/` and are **file-based**: a folder
 | Auth | Auth.js (`@auth/core`) + `argon2` | Email/password sign-in; passwords are hashed, never stored in plain text. |
 | Address autocomplete | LocationIQ REST API | Free, no card required, returns the same kind of address + coordinate data Google Places does. |
 | Data fetching | `@tanstack/react-query` | Caches API responses in the browser; also powers the admin dashboard's auto-refreshing panels. |
-| Icons / animation | `lucide-react`, `motion` | UI polish. |
+| Icons / animation | `lucide-react`, `motion` | UI polish. Where every visual piece comes from is spelled out plainly in [STORY.md, section 8](./STORY.md#8-where-the-look-of-the-app-comes-from). |
 
 ## Where things live
 
