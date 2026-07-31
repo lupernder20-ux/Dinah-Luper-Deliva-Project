@@ -1,6 +1,5 @@
 import { AsyncLocalStorage } from 'node:async_hooks';
 import nodeConsole from 'node:console';
-import { skipCSRFCheck } from '@auth/core';
 import Credentials from '@auth/core/providers/credentials';
 import { authHandler, initAuthConfig } from '@hono/auth-js';
 import { Pool, neonConfig } from '@neondatabase/serverless';
@@ -114,7 +113,14 @@ if (process.env.AUTH_SECRET) {
         signIn: '/account/signin',
         signOut: '/account/logout',
       },
-      skipCSRFCheck,
+      // NOTE: skipCSRFCheck was set here originally (a carry-over from the
+      // iframe-based builder platform this was scaffolded on). It makes
+      // Auth.js serve GET /api/auth/csrf as a 404 and clear the CSRF cookie,
+      // which breaks the browser sign-in flow entirely: the client's signIn()
+      // fetches a CSRF token before posting credentials, so it never got as
+      // far as submitting. Direct POSTs still worked, which is what made this
+      // look like a "nothing happens on click" bug. Leaving CSRF enabled is
+      // both correct for normal hosting and the safer default.
       session: {
         strategy: 'jwt',
       },
