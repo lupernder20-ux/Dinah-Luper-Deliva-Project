@@ -93,7 +93,12 @@ if (process.env.AUTH_SECRET) {
   app.use(
     '*',
     initAuthConfig((c) => ({
-      secret: c.env.AUTH_SECRET,
+      // c.env only carries bindings when the adapter passes them (under
+      // @hono/node-server it's the raw req/res pair, and hono/vercel calls
+      // app.fetch(req) with no env at all — so reading it unguarded threw a
+      // TypeError on every request there). process.env is the real source on
+      // both hosts.
+      secret: c.env?.AUTH_SECRET ?? process.env.AUTH_SECRET,
       pages: {
         signIn: '/account/signin',
         signOut: '/account/logout',
