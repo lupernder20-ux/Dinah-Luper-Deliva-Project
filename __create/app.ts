@@ -19,6 +19,17 @@ import { isAuthAction } from './is-auth-action';
 import { API_BASENAME, api } from './route-builder';
 neonConfig.webSocketConstructor = ws;
 
+// On Vercel each request runs in a short-lived serverless function, where
+// opening a WebSocket to Neon doesn't work — every auth query (sign-in and
+// sign-up both go through the adapter's pool) failed there while pages, which
+// touch no database, rendered fine. This routes pool.query() over Neon's HTTP
+// endpoint instead. Safe here because the adapter only ever uses pool.query()
+// — no client checkout, no transactions. Render keeps the WebSocket pool,
+// which suits its long-lived process.
+if (process.env.VERCEL) {
+  neonConfig.poolQueryViaFetch = true;
+}
+
 const als = new AsyncLocalStorage<{ requestId: string }>();
 
 for (const method of ['log', 'info', 'warn', 'error', 'debug'] as const) {
