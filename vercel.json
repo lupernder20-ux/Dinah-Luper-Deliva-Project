@@ -2,5 +2,10 @@
   "installCommand": "npm install --legacy-peer-deps",
   "buildCommand": "npm run build:vercel",
   "outputDirectory": "build-vercel/client",
+  "functions": {
+    "api/index.ts": {
+      "includeFiles": "{src/**,alias-resolver.mjs,register-aliases.mjs}"
+    }
+  },
   "rewrites": [{ "source": "/((?!assets/).*)", "destination": "/api" }]
 }
